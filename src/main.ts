@@ -1,83 +1,84 @@
-interface IProduct {
-    name: string;
-    price: number;
+class Address {
+    constructor(
+        public street: string,
+        public city: string,
+        public postalCode: string
+    ) {}
 }
 
-interface IPurchase {
-    id: string;
-    amount: number;
-    product: IProduct;
-}
-
-class Product {
-    constructor(public name: string, public price: number) {}
+class Customer {
+    constructor(
+        public name: string,
+        public age: number,
+        public address: Address
+    ) {}
 
     displayInfo(): void {
-        const product = {
-            name: this.name,
-            price: this.price,
-        };
-        console.log('Product =>', product.name, 'info =>', product);
+        console.log(`Ім'я: ${this.name}`);
+        console.log(`Вік: ${this.age}`);
+        console.log(`Адреса: ${this.address.street}, ${this.address.city}, ${this.address.postalCode}`);
     }
 }
 
-class Cart {
-    purchases: IPurchase[];
+interface Shape {
+    calculateArea(): number;
+}
 
-    constructor() {
-        this.purchases = [];
-    }
+class Rectangle implements Shape {
+    constructor(public width: number, public height: number) {}
 
-    add(product: IProduct, amount: number): void {
-        const existingPurchase = this.purchases.find((purchase) => purchase.product.name === product.name);
-
-        if (existingPurchase) {
-            existingPurchase.amount++;
-            console.log('Cart:', this.purchases);
-        } else {
-            const purchase: IPurchase = {
-                id: product.name,
-                product,
-                amount,
-            };
-            this.purchases.push(purchase);
-            console.log('Purchase added:', purchase);
-            console.log('Cart:', this.purchases);
-        }
-    }
-
-    delete(product: IProduct): void {
-        const purchaseIndexToDelete = this.purchases.findIndex((purchase) => purchase.product.name === product.name);
-
-        if (purchaseIndexToDelete !== -1) {
-            if (this.purchases[purchaseIndexToDelete].amount > 1) {
-                this.purchases[purchaseIndexToDelete].amount--;
-            } else {
-                this.purchases.splice(purchaseIndexToDelete, 1);
-            }
-        }
-
-        console.log('Purchase deleted:', this.purchases);
-    }
-
-    calculateTotalSum(): number {
-        const totalSum = this.purchases.reduce((sum, purchase) => {
-            return sum + purchase.product.price * purchase.amount;
-        }, 0);
-
-        console.log('Total sum of cart:', totalSum);
-
-        return totalSum;
+    calculateArea(): number {
+        return this.width * this.height;
     }
 }
 
-const apple = new Product('apple', 5);
-apple.displayInfo();
+class Circle implements Shape {
+    constructor(public radius: number) {}
 
-const juice = new Product('juice', 40);
+    calculateArea(): number {
+        return Math.PI * this.radius ** 2;
+    }
+}
 
-const cart = new Cart();
-cart.add(apple, 3);
-cart.add(juice, 1);
-cart.delete(apple);
-cart.calculateTotalSum();
+class Store {
+    private products: string[] = [];
+
+    constructor(public name: string) {}
+
+    addProduct(product: string): void {
+        this.products.push(product);
+    }
+
+    removeProduct(product: string): void {
+        const index = this.products.indexOf(product);
+        if (index !== -1) {
+            this.products.splice(index, 1);
+        }
+    }
+
+    displayProducts(): void {
+        console.log(`Товари у магазині "${this.name}":`);
+        this.products.forEach((product, index) => {
+            console.log(`${index + 1}. ${product}`);
+        });
+    }
+}
+
+const address = new Address('Вулиця 1', 'Місто 1', '12345');
+
+
+const customer = new Customer('Іван', 25, address);
+customer.displayInfo();
+
+const rectangle = new Rectangle(5, 10);
+const circle = new Circle(3);
+
+console.log('Площа прямокутника:', rectangle.calculateArea());
+console.log('Площа кола:', circle.calculateArea());
+
+const store = new Store('Моя Магазин');
+store.addProduct('Товар 1');
+store.addProduct('Товар 2');
+store.displayProducts();
+store.removeProduct('Товар 1');
+store.displayProducts();
